@@ -19,6 +19,9 @@ class MyApp extends StatelessWidget {
         '/map': (_) => const MapScreen(),
         '/profile': (_) => const ProfileScreen(),
       },
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
     );
   }
 }
