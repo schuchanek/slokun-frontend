@@ -27,3 +27,19 @@ jobs:
         with:
           name: web_build
           path: flutter_app/build/web
+
+      - name: Smoke test: verify build files exist
+        run: |
+          ls -la flutter_app/build/web
+          if [ ! -f flutter_app/build/web/index.html ]; then echo "index.html missing"; exit 1; fi
+          if [ ! -f flutter_app/build/web/main.dart.js ]; then echo "main.dart.js missing"; exit 1; fi
+
+      - name: Smoke test: serve and curl
+        run: |
+          cd flutter_app/build/web
+          python3 -m http.server 8080 &
+          PID=$!
+          sleep 1
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8080/)
+          if [ "$STATUS" -ne 200 ]; then echo "Web server returned $STATUS"; kill $PID; exit 1; fi
+          kill $PID
