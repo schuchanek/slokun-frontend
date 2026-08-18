@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -11,12 +12,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _loading = false;
+  final _auth = AuthService();
 
   void _register() async {
     setState(() => _loading = true);
-    await Future.delayed(const Duration(seconds: 1));
+    final resp = await _auth.registerWithEmail(_emailController.text.trim(), _passwordController.text.trim());
     setState(() => _loading = false);
-    Navigator.pop(context);
+    if (resp['success'] == true) {
+      Navigator.pop(context);
+    } else {
+      final msg = resp['error'] != null ? resp['error']['message'] : 'Registration failed';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    }
   }
 
   @override
