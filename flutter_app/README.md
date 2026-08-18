@@ -22,3 +22,11 @@ Required env vars:
  - FLUTTER_WEB_PORT (default 8080)
 
 DevOps: proxy should route /api/* to API_BASE_URL and proxy other paths to the frontend container on 8080. CORS must allow OAuth redirect and API calls.
+
+Google Maps (web):
+ - Add your Maps API key to web/index.html by replacing YOUR_GOOGLE_MAPS_API_KEY.
+ - Alternatively inject the key during CI into web/index.html before deploying.
+
+Firebase:
+ - Run `flutterfire configure` to generate lib/src/firebase_options.dart and set Firebase project settings.
+ - Ensure FIREBASE_API_KEY & FIREBASE_AUTH_DOMAIN in .env if using Firebase web config.
