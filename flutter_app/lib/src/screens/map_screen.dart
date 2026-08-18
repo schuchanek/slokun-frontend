@@ -35,11 +35,13 @@ class _MapScreenState extends State<MapScreen> {
       try {
         final id = v['id'].toString();
         final name = v['name'] ?? 'Venue';
-        final latv = (v['location']?['lat'] ?? lat) as double;
-        final lngv = (v['location']?['lng'] ?? lng) as double;
-        markers.add(Marker(markerId: MarkerId(id), position: LatLng(latv, lngv), infoWindow: InfoWindow(title: name), onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => VenueDetailScreen(name: name)));
-        }));
+    final latvRaw = v['location']?['lat'] ?? lat;
+    final lngvRaw = v['location']?['lng'] ?? lng;
+    final latv = (latvRaw is num) ? latvRaw.toDouble() : double.tryParse(latvRaw.toString()) ?? lat;
+    final lngv = (lngvRaw is num) ? lngvRaw.toDouble() : double.tryParse(lngvRaw.toString()) ?? lng;
+    markers.add(Marker(markerId: MarkerId(id), position: LatLng(latv, lngv), infoWindow: InfoWindow(title: name), onTap: () {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => VenueDetailScreen(id: id, name: name)));
+    }));
       } catch (_) {}
     }
     setState(() {
