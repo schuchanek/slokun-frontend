@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
 
@@ -13,21 +14,21 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Welcome to Slökun', style: TextStyle(fontSize: 24)),
+              Text('welcome'.tr(), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen())),
-                child: const Text('Login'),
+                child: Text('login'.tr()),
               ),
               const SizedBox(height: 12),
               OutlinedButton(
                 onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen())),
-                child: const Text('Register'),
+                child: Text('register'.tr()),
               ),
               const SizedBox(height: 12),
               FilledButton(
                 onPressed: () => Navigator.pushNamed(context, '/map'),
-                child: const Text('Open Map'),
+                child: Text('map'.tr()),
               ),
             ],
           ),
