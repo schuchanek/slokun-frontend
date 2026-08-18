@@ -9,4 +9,16 @@ Build (web):
 
   flutter build web --release
 
+Production serve:
+ - build/web contains static assets; serve with nginx or static server.
+ - Dockerfile included runs flutter web-server for dev; replace with nginx static image for production.
+
 Env: copy .env.example -> .env
+
+Required env vars:
+ - API_BASE_URL - backend API base URL
+ - OAUTH_GOOGLE_CLIENT_ID - google oauth client id for web
+ - FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN - if using Firebase auth
+ - FLUTTER_WEB_PORT (default 8080)
+
+DevOps: proxy should route /api/* to API_BASE_URL and proxy other paths to the frontend container on 8080. CORS must allow OAuth redirect and API calls.
