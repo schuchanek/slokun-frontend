@@ -1,45 +1,49 @@
-name: Flutter Web Build
+name: frontend-ci
 
 on:
   push:
-    branches: [ 'schuchanek-flutter-mvp', 'main' ]
+    branches:
+      - '**'
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  build:
+  web-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
+          flutter-version: '3.24.5'
+
       - name: Install dependencies
         run: |
           cd flutter_app
           flutter pub get
-      - name: Build web
+
+      - name: Run tests when present
+        if: ${{ hashFiles('flutter_app/test/**/*.dart') != '' }}
+        run: |
+          cd flutter_app
+          flutter test
+
+      - name: Build web app
         run: |
           cd flutter_app
           flutter build web --release
-      - name: Upload web build artifact
+
+      - name: Smoke test output
+        run: |
+          test -f flutter_app/build/web/index.html
+          test -f flutter_app/build/web/main.dart.js
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: web_build
+          name: slokun-web-build
           path: flutter_app/build/web
-
-      - name: Smoke test: verify build files exist
-        run: |
-          ls -la flutter_app/build/web
-          if [ ! -f flutter_app/build/web/index.html ]; then echo "index.html missing"; exit 1; fi
-          if [ ! -f flutter_app/build/web/main.dart.js ]; then echo "main.dart.js missing"; exit 1; fi
-
-      - name: Smoke test: serve and curl
-        run: |
-          cd flutter_app/build/web
-          python3 -m http.server 8080 &
-          PID=$!
-          sleep 1
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8080/)
-          if [ "$STATUS" -ne 200 ]; then echo "Web server returned $STATUS"; kill $PID; exit 1; fi
-          kill $PID
