@@ -3,7 +3,8 @@ name: frontend-ci
 on:
   push:
     branches:
-      - '**'
+      - main
+      - schuchanek-flutter-mvp
   pull_request:
     branches:
       - main
