@@ -1,0 +1,50 @@
+name: frontend-ci
+
+on:
+  push:
+    branches:
+      - main
+      - schuchanek-flutter-mvp
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  web-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+
+      - name: Install dependencies
+        run: |
+          cd flutter_app
+          flutter pub get
+
+      - name: Run tests when present
+        if: ${{ hashFiles('flutter_app/test/**/*.dart') != '' }}
+        run: |
+          cd flutter_app
+          flutter test
+
+      - name: Build web app
+        run: |
+          cd flutter_app
+          flutter build web --release
+
+      - name: Smoke test output
+        run: |
+          test -f flutter_app/build/web/index.html
+          test -f flutter_app/build/web/main.dart.js
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: slokun-web-build
+          path: flutter_app/build/web
